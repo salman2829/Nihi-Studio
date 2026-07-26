@@ -2215,3 +2215,232 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 4px;
 }
 
+/* ===================================================
+   ORDERS MODAL (ORDER HISTORY)
+   =================================================== */
+.orders-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-normal);
+}
+
+.orders-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.orders-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.orders-modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 680px;
+  max-height: 80vh;
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-xl);
+  z-index: 10;
+  transform: translateY(20px) scale(0.95);
+  transition: transform var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+}
+
+.orders-modal.active .orders-modal-content {
+  transform: translateY(0) scale(1);
+}
+
+.orders-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--black);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.orders-close-btn:hover {
+  background: var(--black);
+  color: var(--white);
+  transform: rotate(90deg);
+}
+
+.orders-close-btn svg {
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+.orders-modal-header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--gray-200);
+  flex-shrink: 0;
+}
+
+.orders-modal-header h2 {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  color: var(--black);
+  margin-bottom: 4px;
+}
+
+.orders-modal-header p {
+  font-size: 0.88rem;
+  color: var(--gray-500);
+}
+
+.orders-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.orders-empty {
+  text-align: center;
+  padding: var(--space-4xl) var(--space-xl);
+  color: var(--gray-500);
+}
+
+.orders-empty svg {
+  width: 60px;
+  height: 60px;
+  color: var(--gray-400);
+  margin-bottom: var(--space-md);
+}
+
+.orders-empty p {
+  font-size: 0.95rem;
+}
+
+/* Individual Order Card */
+.order-card {
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-md);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+  background: var(--gray-100);
+}
+
+.order-card:hover {
+  border-color: var(--gold);
+}
+
+.order-card-header {
+  background: var(--white);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.order-meta-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.order-id {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--black-soft);
+  letter-spacing: 0.5px;
+}
+
+.order-date {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
+.order-status-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background: #EBF5EB;
+  color: #276A27;
+  border: 1px solid #C2E0C2;
+}
+
+.order-card-items {
+  padding: var(--space-md) var(--space-lg);
+  background: var(--cream);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.order-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.order-item-name {
+  color: var(--black);
+  font-weight: 500;
+}
+
+.order-item-qty {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  margin-left: var(--space-sm);
+}
+
+.order-item-price {
+  font-weight: 600;
+}
+
+.order-card-footer {
+  background: var(--white);
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-total-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  letter-spacing: 0.5px;
+}
+
+.order-total-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--black);
+}
+
+

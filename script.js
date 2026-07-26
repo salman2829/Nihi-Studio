@@ -8,6 +8,265 @@ let wishlist = new Set();
 let currentUser = null; // { email, fullName, id }
 let pendingAuthAction = null; // Callback after successful login/signup
 
+// ===== SUPABASE CART & ORDERS DATABASE SYNC =====
+
+async function syncCartToSupabase() {
+  if (!currentUser || !window.supabaseClient) return;
+  try {
+    const { error } = await window.supabaseClient
+      .from('carts')
+      .upsert({ user_id: currentUser.id, items: cart, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+    if (error) throw error;
+    console.log('✅ Cart synced to Supabase.');
+  } catch (e) {
+    // Silently fall back to localStorage
+    console.warn('⚠️ Cart sync to Supabase failed. Saving to localStorage.', e.message);
+    saveCartLocally();
+  }
+}
+
+function saveCartLocally() {
+  if (!currentUser) return;
+  localStorage.setItem(`nihi_cart_${currentUser.id}`, JSON.stringify(cart));
+}
+
+function loadCartLocally() {
+  if (!currentUser) return;
+  try {
+    const saved = localStorage.getItem(`nihi_cart_${currentUser.id}`);
+    if (saved) { cart = JSON.parse(saved); updateCartUI(false); }
+  } catch (e) { cart = []; }
+}
+
+async function loadCartFromSupabase() {
+  if (!currentUser || !window.supabaseClient) { loadCartLocally(); return; }
+  try {
+    const { data, error } = await window.supabaseClient
+      .from('carts')
+      .select('items')
+      .eq('user_id', currentUser.id)
+      .single();
+    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows found
+    if (data && Array.isArray(data.items)) {
+      cart = data.items;
+      console.log(`✅ Cart loaded from Supabase — ${cart.length} item(s)`);
+    } else {
+      loadCartLocally();
+    }
+    updateCartUI(false);
+  } catch (e) {
+    console.warn('⚠️ Could not load cart from Supabase:', e.message);
+    loadCartLocally();
+  }
+}
+
+async function saveOrderToDatabase(paymentId, paymentStatus) {
+  if (!currentUser) return;
+  const orderData = {
+    user_id: currentUser.id,
+    items: cart,
+    total_amount: cart.reduce((sum, item) => sum + item.price * item.qty, 0),
+    razorpay_payment_id: paymentId,
+    payment_status: paymentStatus,
+    created_at: new Date().toISOString()
+  };
+
+  if (window.supabaseClient) {
+    try {
+      const { error } = await window.supabaseClient.from('orders').insert(orderData);
+      if (error) throw error;
+      console.log('✅ Order saved to Supabase.');
+    } catch (e) {
+      console.warn('⚠️ Could not save order to Supabase:', e.message);
+      saveOrderLocally(orderData);
+    }
+  } else {
+    saveOrderLocally(orderData);
+  }
+}
+
+function saveOrderLocally(orderData) {
+  if (!currentUser) return;
+  const key = `nihi_orders_${currentUser.id}`;
+  const existing = JSON.parse(localStorage.getItem(key) || '[]');
+  existing.unshift({ ...orderData, id: 'local_' + Date.now() });
+  localStorage.setItem(key, JSON.stringify(existing));
+}
+
+async function loadOrders() {
+  if (!currentUser) return [];
+  if (window.supabaseClient) {
+    try {
+      const { data, error } = await window.supabaseClient
+        .from('orders')
+        .select('*')
+        .eq('user_id', currentUser.id)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    } catch (e) {
+      console.warn('⚠️ Could not load orders from Supabase:', e.message);
+    }
+  }
+  // Fallback: localStorage
+  const key = `nihi_orders_${currentUser.id}`;
+  return JSON.parse(localStorage.getItem(key) || '[]');
+}
+
+// ===== RAZORPAY CHECKOUT =====
+
+function launchRazorpayCheckout() {
+  if (!currentUser) return;
+  if (cart.length === 0) { alert('Your cart is empty!'); return; }
+
+  const totalAmount = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  const razorpayKey = (window.NIHI_RAZORPAY_CONFIG && window.NIHI_RAZORPAY_CONFIG.KEY_ID) || '';
+
+  if (!razorpayKey || razorpayKey === 'rzp_test_your_key_id') {
+    // No valid key — show helpful message
+    alert(`⚠️ Razorpay is not yet configured.\n\nPlease add your Razorpay Key ID to:\n  supabase_config.js → window.NIHI_RAZORPAY_CONFIG.KEY_ID\n\nGet your keys at: https://dashboard.razorpay.com`);
+    return;
+  }
+
+  if (typeof Razorpay === 'undefined') {
+    alert('⚠️ Razorpay SDK failed to load. Please check your internet connection and try again.');
+    return;
+  }
+
+  const options = {
+    key: razorpayKey,
+    amount: totalAmount * 100, // Razorpay uses paise (₹1 = 100 paise)
+    currency: 'INR',
+    name: 'Nihi Studio',
+    description: `${cart.reduce((s, i) => s + i.qty, 0)} item(s) — Premium Jewelry`,
+    image: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💎</text></svg>',
+    handler: async function(response) {
+      const paymentId = response.razorpay_payment_id;
+      // Save order to database
+      await saveOrderToDatabase(paymentId, 'PAID');
+      // Clear cart
+      const clearedCart = [...cart];
+      cart = [];
+      await syncCartToSupabase();
+      updateCartUI(false);
+      window.closeCart();
+      // Show success message
+      showOrderSuccessModal(paymentId, clearedCart, totalAmount);
+    },
+    prefill: {
+      name: currentUser.fullName || '',
+      email: currentUser.email || ''
+    },
+    theme: { color: '#B8922A' },
+    modal: {
+      ondismiss: function() {
+        console.log('Razorpay checkout closed by user.');
+      }
+    }
+  };
+
+  const rzp = new Razorpay(options);
+  rzp.on('payment.failed', async function(response) {
+    await saveOrderToDatabase(response.error.metadata?.payment_id || 'UNKNOWN', 'FAILED');
+    alert(`❌ Payment failed: ${response.error.description}`);
+  });
+  rzp.open();
+}
+
+function showOrderSuccessModal(paymentId, items, total) {
+  const successHtml = `
+  <div id="orderSuccessOverlay" style="
+    position:fixed;inset:0;z-index:9999;background:rgba(10,10,10,0.7);
+    backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;
+  ">
+    <div style="
+      background:#fff;border-radius:24px;padding:48px 40px;max-width:480px;width:90%;
+      text-align:center;box-shadow:0 32px 80px rgba(0,0,0,0.3);
+    ">
+      <div style="font-size:64px;margin-bottom:16px;">🎉</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:8px;color:#1a1a1a;">Order Confirmed!</h2>
+      <p style="color:#666;font-size:0.9rem;margin-bottom:4px;">Thank you, <strong>${currentUser.fullName || currentUser.email}</strong>!</p>
+      <p style="color:#888;font-size:0.8rem;margin-bottom:24px;">Payment ID: <code>${paymentId}</code></p>
+      <div style="background:#faf7f0;border-radius:12px;padding:16px;margin-bottom:24px;text-align:left;">
+        ${items.map(i => `<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.85rem;"><span>${i.name} ×${i.qty}</span><strong>₹${(i.price * i.qty).toLocaleString()}</strong></div>`).join('')}
+        <div style="border-top:1px solid #e0d5c5;margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-weight:700;"><span>Total Paid</span><span style="color:#B8922A;">₹${total.toLocaleString()}</span></div>
+      </div>
+      <button onclick="document.getElementById('orderSuccessOverlay').remove()" style="
+        background:#B8922A;color:#fff;border:none;padding:14px 40px;border-radius:100px;
+        font-size:0.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;
+      ">CONTINUE SHOPPING</button>
+    </div>
+  </div>`;
+  const div = document.createElement('div');
+  div.innerHTML = successHtml;
+  document.body.appendChild(div.firstElementChild);
+}
+
+// ===== ORDERS MODAL LOGIC =====
+
+function openOrdersModal() {
+  const modal = document.getElementById('ordersModal');
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    renderOrdersList();
+  }
+}
+
+function closeOrdersModal() {
+  const modal = document.getElementById('ordersModal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+}
+
+async function renderOrdersList() {
+  const listEl = document.getElementById('ordersList');
+  const emptyEl = document.getElementById('ordersEmpty');
+  if (!listEl) return;
+
+  // Show loading state
+  listEl.innerHTML = `<div style="text-align:center;padding:48px 24px;color:#888;"><p>Loading your orders…</p></div>`;
+
+  const orders = await loadOrders();
+
+  if (!orders || orders.length === 0) {
+    listEl.innerHTML = '';
+    if (emptyEl) listEl.appendChild(emptyEl);
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+
+  listEl.innerHTML = orders.map(order => {
+    const items = Array.isArray(order.items) ? order.items : [];
+    const date = order.created_at ? new Date(order.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A';
+    const shortId = (order.razorpay_payment_id || order.id || '').toString().slice(-10).toUpperCase();
+    return `
+    <div class="order-card">
+      <div class="order-card-header">
+        <div class="order-meta-left">
+          <span class="order-id">Order #${shortId}</span>
+          <span class="order-date">${date}</span>
+        </div>
+        <span class="order-status-badge">${order.payment_status === 'PAID' ? '✓ Paid' : order.payment_status || 'Completed'}</span>
+      </div>
+      <div class="order-card-items">
+        ${items.map(item => `
+          <div class="order-item-row">
+            <span class="order-item-name">${item.name} <span class="order-item-qty">×${item.qty}</span></span>
+            <span class="order-item-price">₹${(item.price * item.qty).toLocaleString()}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="order-card-footer">
+        <span class="order-total-label">Total Paid</span>
+        <span class="order-total-value">₹${Number(order.total_amount).toLocaleString()}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 // Products Data
 const products = {
   1: { id: 1, name: 'Celestial Diamond Ring', price: 2499, original: 3999, discount: '38% off', img: 'images/ring.png', rating: '★★★★★', reviews: '(128)', desc: 'A breathtaking solitaire diamond ring set in 18K gold. The celestial-inspired design features a brilliant-cut diamond that catches light from every angle.' },
@@ -45,7 +304,7 @@ window.closeCart = function() {
 
 window.removeFromCart = function(id) {
   cart = cart.filter(item => item.id !== id);
-  updateCartUI();
+  updateCartUI(true);
 };
 
 window.updateQty = function(id, delta) {
@@ -57,10 +316,10 @@ window.updateQty = function(id, delta) {
       return;
     }
   }
-  updateCartUI();
+  updateCartUI(true);
 };
 
-function updateCartUI() {
+function updateCartUI(shouldSync = true) {
   const cartItems = document.getElementById('cartItems');
   const cartEmpty = document.getElementById('cartEmpty');
   const cartFooter = document.getElementById('cartFooter');
@@ -118,6 +377,12 @@ function updateCartUI() {
       cartItems.appendChild(el);
     });
   }
+  // Sync cart to database whenever UI updates with items
+  if (shouldSync && currentUser) {
+    syncCartToSupabase();
+  } else if (shouldSync && currentUser) {
+    saveCartLocally();
+  }
 }
 
 function executeAddToCart(product) {
@@ -127,7 +392,7 @@ function executeAddToCart(product) {
   } else {
     cart.push({ ...product, qty: 1 });
   }
-  updateCartUI();
+  updateCartUI(true);
   window.openCart();
 }
 
@@ -202,6 +467,9 @@ function onAuthSuccess(userObj) {
   currentUser = userObj;
   updateUserUI();
   closeAuthModal();
+
+  // Load this user's saved cart from database
+  loadCartFromSupabase();
 
   // Execute pending action if user tried to add item / checkout before logging in
   if (pendingAuthAction) {
@@ -392,7 +660,11 @@ async function processLogout() {
     try { await window.supabaseClient.auth.signOut(); } catch (e) {}
   }
   currentUser = null;
+  cart = [];
+  wishlist = new Set();
+  updateCartUI(false);
   updateUserUI();
+  console.log('👋 User signed out. Cart cleared.');
 }
 
 // ===== DOM INITIALIZATION =====
@@ -700,6 +972,7 @@ document.addEventListener('DOMContentLoaded', () => {
       closeSearch();
       closeQuickView();
       closeAuthModal();
+      closeOrdersModal();
       window.closeCart();
       closeMobileMenu();
     }
@@ -871,18 +1144,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Checkout Button (Auth Gated!)
+  // Checkout Button — Razorpay Payment Gateway (Auth Gated!)
   const checkoutBtn = document.getElementById('checkoutBtn');
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
       requireAuth(() => {
-        const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-        const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        alert(`🎉 Nihi Studio Order Placed!\n\nUser: ${currentUser.fullName} (${currentUser.email})\nItems: ${totalItems}\nTotal: ₹${totalPrice.toLocaleString()}\n\nThank you for shopping with Nihi Studio!`);
-        cart = [];
-        updateCartUI();
-        window.closeCart();
+        launchRazorpayCheckout();
       }, "Please sign in or create an account to complete your checkout.");
     });
   }
+
+  // Orders Modal
+  const ordersCloseBtn = document.getElementById('ordersCloseBtn');
+  const ordersBackdrop = document.getElementById('ordersBackdrop');
+  if (ordersCloseBtn) ordersCloseBtn.addEventListener('click', closeOrdersModal);
+  if (ordersBackdrop) ordersBackdrop.addEventListener('click', closeOrdersModal);
+
+  // "My Orders" dropdown link
+  const dropdownOrdersBtn = document.getElementById('dropdownOrdersBtn');
+  if (dropdownOrdersBtn) {
+    dropdownOrdersBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!currentUser) { openAuthModal('Please sign in to view your order history.', 'signIn'); return; }
+      // close profile dropdown first
+      const dropdown = document.getElementById('userDropdown');
+      if (dropdown) dropdown.classList.remove('active');
+      openOrdersModal();
+    });
+  }
 });
+

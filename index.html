@@ -13,6 +13,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase_config.js?v=1"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
 
@@ -922,6 +923,27 @@
         <div class="auth-error-msg" id="signUpError" style="display:none;"></div>
         <button type="submit" class="btn-primary auth-submit-btn" id="btnSubmitSignUp">Create Free Account</button>
       </form>
+    </div>
+  </div>
+
+  <!-- ===== ORDERS MODAL (ORDER HISTORY) ===== -->
+  <div class="orders-modal" id="ordersModal">
+    <div class="orders-modal-backdrop" id="ordersBackdrop"></div>
+    <div class="orders-modal-content">
+      <button class="orders-close-btn" id="ordersCloseBtn" aria-label="Close orders">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <div class="orders-modal-header">
+        <h2>Order History</h2>
+        <p>Review your luxury collection & purchase details</p>
+      </div>
+      <div class="orders-list" id="ordersList">
+        <!-- Dynamically populated orders -->
+        <div class="orders-empty" id="ordersEmpty">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+          <p>No orders found. Start building your luxury collection today!</p>
+        </div>
+      </div>
     </div>
   </div>
 
