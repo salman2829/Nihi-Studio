@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nihi Studio — Premium Handcrafted Jewelry</title>
+  <meta name="description" content="Discover exquisite handcrafted jewelry at Nihi Studio. Gold, diamond, and silver jewelry with timeless elegance. Free shipping, easy returns, and lifetime warranty.">
+  <meta name="keywords" content="jewelry, gold jewelry, diamond rings, necklaces, earrings, bracelets, premium jewelry, Nihi Studio">
+  <meta property="og:title" content="Nihi Studio — Premium Handcrafted Jewelry">
+  <meta property="og:description" content="Discover exquisite handcrafted jewelry at Nihi Studio. Timeless elegance, modern design.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase_config.js?v=1"></script>
+</head>
+<body>
+
+  <!-- PAGE LOADER -->
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-logo">NIHI STUDIO</div>
+    <div class="loader-bar"></div>
+  </div>
+
+  <!-- ===== 1. ANNOUNCEMENT BAR ===== -->
+  <div class="announcement-bar">
+    <div class="marquee">
+      <span>Free Shipping on Orders Above ₹999</span>
+      <span>Flat 20% Off on First Order — Use Code: NIHI20</span>
+      <span>BIS Hallmarked Gold & Certified Diamonds</span>
+      <span>Easy 30-Day Returns & Exchange</span>
+      <span>Lifetime Free Replating on Silver Jewelry</span>
+      <span>Free Shipping on Orders Above ₹999</span>
+      <span>Flat 20% Off on First Order — Use Code: NIHI20</span>
+      <span>BIS Hallmarked Gold & Certified Diamonds</span>
+      <span>Easy 30-Day Returns & Exchange</span>
+      <span>Lifetime Free Replating on Silver Jewelry</span>
+    </div>
+  </div>
+
+  <!-- ===== 2. NAVIGATION ===== -->
+  <nav class="navbar" id="navbar">
+    <a href="#" class="nav-logo">
+      <span class="logo-icon">N</span>
+      Nihi Studio
+    </a>
+
+    <div class="nav-links" id="navLinks">
+      <a href="#categories">Rings</a>
+      <a href="#categories">Necklaces</a>
+      <a href="#categories">Earrings</a>
+      <a href="#categories">Bracelets</a>
+      <a href="#categories">Bangles</a>
+      <a href="#new-arrivals">New In</a>
+    </div>
+
+    <div class="nav-actions">
+      <button class="nav-action-btn" id="searchBtn" aria-label="Search">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+      </button>
+      <button class="nav-action-btn" id="wishlistBtn" aria-label="Wishlist">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+        <span class="badge" id="wishlistCount" style="display:none;">0</span>
+      </button>
+      <button class="nav-action-btn" id="cartBtn" aria-label="Cart">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+        <span class="badge" id="cartCount" style="display:none;">0</span>
+      </button>
+      
+      <!-- User Profile Action -->
+      <div class="user-menu-wrapper">
+        <button class="nav-action-btn" id="userBtn" aria-label="Account">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+          <span class="user-avatar-badge" id="userAvatarBadge" style="display:none;"></span>
+        </button>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header">
+            <span class="user-name" id="dropdownUserName">Guest User</span>
+            <span class="user-email" id="dropdownUserEmail">Not signed in</span>
+          </div>
+          <div class="user-dropdown-divider"></div>
+          <a href="#" id="dropdownOrdersBtn" class="dropdown-item">📦 My Orders</a>
+          <a href="#" id="dropdownAuthBtn" class="dropdown-item">🔑 Sign In / Register</a>
+          <a href="#" id="dropdownLogoutBtn" class="dropdown-item logout-item" style="display:none;">🚪 Log Out</a>
+        </div>
+      </div>
+
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#categories">Rings</a>
+    <a href="#categories">Necklaces</a>
+    <a href="#categories">Earrings</a>
+    <a href="#categories">Bracelets</a>
+    <a href="#categories">Bangles</a>
+    <a href="#new-arrivals">New Arrivals</a>
+    <a href="#bestsellers">Bestsellers</a>
+    <a href="#shop-by-price">Shop by Price</a>
+  </div>
+
+  <!-- ===== 3. HERO SECTION ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-slide active">
+      <img src="images/hero_banner_1.png" alt="Nihi Studio - Premium Handcrafted Jewelry" class="hero-slide-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-tag">New Collection 2026</span>
+        <h1>Where Elegance Meets Craftsmanship</h1>
+        <p>Discover our exquisite collection of handcrafted jewelry, where every piece tells a story of timeless beauty.</p>
+        <div class="hero-buttons">
+          <a href="#bestsellers" class="btn-primary">Shop Collection</a>
+          <a href="#new-arrivals" class="btn-outline">Explore New Arrivals</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-slide">
+      <img src="images/hero_banner_2.png" alt="Nihi Studio - Luxury Jewelry" class="hero-slide-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-tag">Exclusive Designs</span>
+        <h1>Adorn Yourself in Gold & Diamonds</h1>
+        <p>BIS hallmarked gold and certified diamonds crafted to perfection. Experience luxury like never before.</p>
+        <div class="hero-buttons">
+          <a href="#categories" class="btn-primary">Shop Now</a>
+          <a href="#trust" class="btn-outline">Why Nihi Studio</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-slide">
+      <img src="images/hero_banner_3.png" alt="Nihi Studio - Fine Jewelry Collection" class="hero-slide-bg">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-tag">Summer Sale — Upto 40% Off</span>
+        <h1>Timeless Pieces, Modern Style</h1>
+        <p>From everyday essentials to statement pieces — find jewelry that speaks to your soul.</p>
+        <div class="hero-buttons">
+          <a href="#shop-by-price" class="btn-primary">Shop the Sale</a>
+          <a href="#categories" class="btn-outline">Browse Categories</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Arrows -->
+    <button class="hero-arrow prev" id="heroPrev" aria-label="Previous slide">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+    </button>
+    <button class="hero-arrow next" id="heroNext" aria-label="Next slide">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+    </button>
+
+    <!-- Hero Dots -->
+    <div class="hero-nav" id="heroNav">
+      <button class="hero-dot active" data-slide="0" aria-label="Slide 1"></button>
+      <button class="hero-dot" data-slide="1" aria-label="Slide 2"></button>
+      <button class="hero-dot" data-slide="2" aria-label="Slide 3"></button>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ===== 4. SHOP BY CATEGORY ===== -->
+  <section class="categories" id="categories">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>Shop by Category</h2>
+        <p>Find the perfect piece from our curated collections</p>
+      </div>
+      <div class="categories-grid stagger-children">
+        <div class="category-card reveal" style="--stagger-index: 0">
+          <div class="category-img-wrapper">
+            <img src="images/ring.png" alt="Rings Collection">
+          </div>
+          <h3>Rings</h3>
+        </div>
+        <div class="category-card reveal" style="--stagger-index: 1">
+          <div class="category-img-wrapper">
+            <img src="images/necklace.png" alt="Necklaces Collection">
+          </div>
+          <h3>Necklaces</h3>
+        </div>
+        <div class="category-card reveal" style="--stagger-index: 2">
+          <div class="category-img-wrapper">
+            <img src="images/earring.png" alt="Earrings Collection">
+          </div>
+          <h3>Earrings</h3>
+        </div>
+        <div class="category-card reveal" style="--stagger-index: 3">
+          <div class="category-img-wrapper">
+            <img src="images/bracelet.png" alt="Bracelets Collection">
+          </div>
+          <h3>Bracelets</h3>
+        </div>
+        <div class="category-card reveal" style="--stagger-index: 4">
+          <div class="category-img-wrapper">
+            <img src="images/bangles.png" alt="Bangles Collection">
+          </div>
+          <h3>Bangles</h3>
+        </div>
+        <div class="category-card reveal" style="--stagger-index: 5">
+          <div class="category-img-wrapper">
+            <img src="images/pendant.png" alt="Pendants Collection">
+          </div>
+          <h3>Pendants</h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 5. BESTSELLERS ===== -->
+  <section class="bestsellers" id="bestsellers">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>Our Bestsellers</h2>
+        <p>Most loved pieces by our customers</p>
+      </div>
+      <div class="product-carousel-wrapper">
+        <button class="carousel-arrow left" data-carousel="bestsellers-carousel" aria-label="Previous">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+        </button>
+        <div class="product-carousel" id="bestsellers-carousel">
+
+          <!-- Product 1 -->
+          <div class="product-card reveal" style="--stagger-index: 0" data-product="1">
+            <div class="product-card-img">
+              <img src="images/ring.png" alt="Celestial Diamond Ring">
+              <span class="product-badge bestseller">Bestseller</span>
+              <div class="product-actions">
+                <button class="product-action-btn wishlist-btn" data-id="1" aria-label="Add to Wishlist">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                </button>
+              </div>
+              <button class="quick-view-btn" data-id="1">Quick View</button>
+            </div>
+            <div class="product-card-body">
+              <h3>Celestial Diamond Ring</h3>
+              <div class="product-rating">
+                <span class="stars">★★★★★</span>
+                <span class="count">(128)</span>
+              </div>
+              <div class="product-price">
+                <span class="current">₹2,499</span>
+                <span class="original">₹3,999</span>
+                <span class="discount">38% off</span>
+              </div>
+              <button class="add-to-cart-btn" data-id="1" data-name="Celestial Diamond Ring" data-price="2499" data-img="images/ring.png"><span>Add to Cart</span></button>
+            </div>
+          </div>
+
+          <!-- Product 2 -->
+          <div class="product-card reveal" style="--stagger-index: 1" data-product="2">
+            <div class="product-card-img">
+              <img src="images/necklace.png" alt="Eternal Gold Necklace">
+              <span class="product-badge bestseller">Bestseller</span>
+              <div class="product-actions">
+                <button class="product-action-btn wishlist-btn" data-id="2" aria-label="Add to Wishlist">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                </button>
+              </div>
+              <button class="quick-view-btn" data-id="2">Quick View</button>
+            </div>
+            <div class="product-card-body">
+              <h3>Eternal Gold Necklace</h3>
+              <div class="product-rating">
+                <span class="stars">★★★★★</span>
+                <span class="count">(96)</span>
+              </div>
+              <div class="product-price">
+                <span class="current">₹3,299</span>
+                <span class="original">₹4,999</span>
+                <span class="discount">34% off</span>
+              </div>
+              <button class="add-to-cart-btn" data-id="2" data-name="Eternal Gold Necklace" data-price="3299" data-img="images/necklace.png"><span>Add to Cart</span></button>
+            </div>
+          </div>
+
+          <!-- Product 3 -->
+          <div class="product-card reveal" style="--stagger-index: 2" data-product="3">
+            <div class="product-card-img">
+              <img src="images/earring.png" alt="Aurora Drop Earrings">
+              <span class="product-badge sale">30% Off</span>
+              <div class="product-actions">
+                <button class="product-action-btn wishlist-btn" data-id="3" aria-label="Add to Wishlist">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                </button>
+              </div>
+              <button class="quick-view-btn" data-id="3">Quick View</button>
+            </div>
+            <div class="product-card-body">
+              <h3>Aurora Drop Earrings</h3>
+              <div class="product-rating">
+                <span class="stars">★★★★☆</span>
+                <span class="count">(74)</span>
+              </div>
+              <div class="product-price">
+                <span class="current">₹1,699</span>
+                <span class="original">₹2,499</span>
+                <span class="discount">30% off</span>
+              </div>
+              <button class="add-to-cart-btn" data-id="3" data-name="Aurora Drop Earrings" data-price="1699" data-img="images/earring.png"><span>Add to Cart</span></button>
+            </div>
+          </div>
+
+          <!-- Product 4 -->
+          <div class="product-card reveal" style="--stagger-index: 3" data-product="4">
+            <div class="product-card-img">
+              <img src="images/bracelet.png" alt="Luxe Tennis Bracelet">
+              <span class="product-badge bestseller">Bestseller</span>
+              <div class="product-actions">
+                <button class="product-action-btn wishlist-btn" data-id="4" aria-label="Add to Wishlist">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                </button>
+              </div>
+              <button class="quick-view-btn" data-id="4">Quick View</button>
+            </div>
+            <div class="product-card-body">
+              <h3>Luxe Tennis Bracelet</h3>
+              <div class="product-rating">
+                <span class="stars">★★★★★</span>
+                <span class="count">(112)</span>
+              </div>
+              <div class="product-price">
+                <span class="current">₹4,999</span>
+                <span class="original">₹7,999</span>
+                <span class="discount">37% off</span>
+              </div>
+              <button class="add-to-cart-btn" data-id="4" data-name="Luxe Tennis Bracelet" data-price="4999" data-img="images/bracelet.png"><span>Add to Cart</span></button>
+            </div>
+          </div>
+
+          <!-- Product 5 -->
+          <div class="product-card reveal" style="--stagger-index: 4" data-product="5">
+            <div class="product-card-img">
+              <img src="images/pendant.png" alt="Heart Diamond Pendant">
+              <span class="product-badge new">New</span>
+              <div class="product-actions">
+                <button class="product-action-btn wishlist-btn" data-id="5" aria-label="Add to Wishlist">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                </button>
+              </div>
+              <button class="quick-view-btn" data-id="5">Quick View</button>
+            </div>
+            <div class="product-card-body">
+              <h3>Heart Diamond Pendant</h3>
+              <div class="product-rating">
+                <span class="stars">★★★★★</span>
+                <span class="count">(58)</span>
+              </div>
+              <div class="product-price">
+                <span class="current">₹1,999</span>
+                <span class="original">₹2,999</span>
+                <span class="discount">33% off</span>
+              </div>
+              <button class="add-to-cart-btn" data-id="5" data-name="Heart Diamond Pendant" data-price="1999" data-img="images/pendant.png"><span>Add to Cart</span></button>
+            </div>
+          </div>
+
+          <!-- Product 6 -->
+          <div class="product-card reveal" style="--stagger-index: 5" data-product="6">
+            <div class="product-card-img">
+              <img src="images/bangles.png" alt="Royal Gold Bangles Set">
+              <div class="product-actions">
+                <button class="product-action-btn wishlist-btn" data-id="6" aria-label="Add to Wishlist">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                </button>
+              </div>
+              <button class="quick-view-btn" data-id="6">Quick View</button>
+            </div>
+            <div class="product-card-body">
+              <h3>Royal Gold Bangles Set</h3>
+              <div class="product-rating">
+                <span class="stars">★★★★☆</span>
+                <span class="count">(89)</span>
+              </div>
+              <div class="product-price">
+                <span class="current">₹5,499</span>
+                <span class="original">₹8,999</span>
+                <span class="discount">39% off</span>
+              </div>
+              <button class="add-to-cart-btn" data-id="6" data-name="Royal Gold Bangles Set" data-price="5499" data-img="images/bangles.png"><span>Add to Cart</span></button>
+            </div>
+          </div>
+
+        </div>
+        <button class="carousel-arrow right" data-carousel="bestsellers-carousel" aria-label="Next">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 6. PROMOTIONAL BANNER ===== -->
+  <section class="promo-banner" id="promo">
+    <div class="promo-banner-bg" style="background-image: url('images/lifestyle_banner.png');"></div>
+    <div class="promo-banner-overlay"></div>
+    <div class="promo-banner-content">
+      <h2 class="reveal">The Art of Adornment</h2>
+      <p class="reveal">Every piece is a masterpiece — meticulously crafted by skilled artisans using ethically sourced materials.</p>
+      <a href="#new-arrivals" class="btn-primary reveal">Discover the Collection</a>
+    </div>
+  </section>
+
+  <!-- ===== 7. NEW ARRIVALS ===== -->
+  <section class="new-arrivals" id="new-arrivals">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>New Arrivals</h2>
+        <p>The latest additions to our collection</p>
+      </div>
+      <div class="arrivals-grid stagger-children">
+
+        <div class="product-card reveal" style="--stagger-index: 0" data-product="7">
+          <div class="product-card-img">
+            <img src="images/pendant.png" alt="Moonstone Pendant">
+            <span class="product-badge new">New</span>
+            <div class="product-actions">
+              <button class="product-action-btn wishlist-btn" data-id="7" aria-label="Add to Wishlist">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+              </button>
+            </div>
+            <button class="quick-view-btn" data-id="7">Quick View</button>
+          </div>
+          <div class="product-card-body">
+            <h3>Moonstone Pendant</h3>
+            <div class="product-rating">
+              <span class="stars">★★★★★</span>
+              <span class="count">(32)</span>
+            </div>
+            <div class="product-price">
+              <span class="current">₹1,499</span>
+              <span class="original">₹1,999</span>
+              <span class="discount">25% off</span>
+            </div>
+            <button class="add-to-cart-btn" data-id="7" data-name="Moonstone Pendant" data-price="1499" data-img="images/pendant.png"><span>Add to Cart</span></button>
+          </div>
+        </div>
+
+        <div class="product-card reveal" style="--stagger-index: 1" data-product="8">
+          <div class="product-card-img">
+            <img src="images/earring.png" alt="Sapphire Stud Earrings">
+            <span class="product-badge new">New</span>
+            <div class="product-actions">
+              <button class="product-action-btn wishlist-btn" data-id="8" aria-label="Add to Wishlist">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+              </button>
+            </div>
+            <button class="quick-view-btn" data-id="8">Quick View</button>
+          </div>
+          <div class="product-card-body">
+            <h3>Sapphire Stud Earrings</h3>
+            <div class="product-rating">
+              <span class="stars">★★★★★</span>
+              <span class="count">(18)</span>
+            </div>
+            <div class="product-price">
+              <span class="current">₹2,199</span>
+              <span class="original">₹2,999</span>
+              <span class="discount">27% off</span>
+            </div>
+            <button class="add-to-cart-btn" data-id="8" data-name="Sapphire Stud Earrings" data-price="2199" data-img="images/earring.png"><span>Add to Cart</span></button>
+          </div>
+        </div>
+
+        <div class="product-card reveal" style="--stagger-index: 2" data-product="9">
+          <div class="product-card-img">
+            <img src="images/ring.png" alt="Eternity Band Ring">
+            <span class="product-badge new">New</span>
+            <div class="product-actions">
+              <button class="product-action-btn wishlist-btn" data-id="9" aria-label="Add to Wishlist">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+              </button>
+            </div>
+            <button class="quick-view-btn" data-id="9">Quick View</button>
+          </div>
+          <div class="product-card-body">
+            <h3>Eternity Band Ring</h3>
+            <div class="product-rating">
+              <span class="stars">★★★★☆</span>
+              <span class="count">(45)</span>
+            </div>
+            <div class="product-price">
+              <span class="current">₹3,799</span>
+              <span class="original">₹5,499</span>
+              <span class="discount">31% off</span>
+            </div>
+            <button class="add-to-cart-btn" data-id="9" data-name="Eternity Band Ring" data-price="3799" data-img="images/ring.png"><span>Add to Cart</span></button>
+          </div>
+        </div>
+
+        <div class="product-card reveal" style="--stagger-index: 3" data-product="10">
+          <div class="product-card-img">
+            <img src="images/necklace.png" alt="Rose Gold Chain Necklace">
+            <span class="product-badge new">New</span>
+            <div class="product-actions">
+              <button class="product-action-btn wishlist-btn" data-id="10" aria-label="Add to Wishlist">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+              </button>
+            </div>
+            <button class="quick-view-btn" data-id="10">Quick View</button>
+          </div>
+          <div class="product-card-body">
+            <h3>Rose Gold Chain Necklace</h3>
+            <div class="product-rating">
+              <span class="stars">★★★★★</span>
+              <span class="count">(27)</span>
+            </div>
+            <div class="product-price">
+              <span class="current">₹2,799</span>
+              <span class="original">₹3,999</span>
+              <span class="discount">30% off</span>
+            </div>
+            <button class="add-to-cart-btn" data-id="10" data-name="Rose Gold Chain Necklace" data-price="2799" data-img="images/necklace.png"><span>Add to Cart</span></button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 8. SHOP BY PRICE ===== -->
+  <section class="shop-by-price" id="shop-by-price">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>Shop by Price</h2>
+        <p>Beautiful jewelry for every budget</p>
+      </div>
+      <div class="price-cards stagger-children">
+        <div class="price-card reveal" style="--stagger-index: 0">
+          <img src="images/earring.png" alt="Under ₹999">
+          <div class="price-card-overlay"></div>
+          <div class="price-card-content">
+            <h3>Under ₹999</h3>
+            <p>Everyday elegance that doesn't break the bank</p>
+            <span class="shop-now-link">
+              Shop Now
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+            </span>
+          </div>
+        </div>
+        <div class="price-card reveal" style="--stagger-index: 1">
+          <img src="images/pendant.png" alt="Under ₹1,999">
+          <div class="price-card-overlay"></div>
+          <div class="price-card-content">
+            <h3>Under ₹1,999</h3>
+            <p>Premium pieces at accessible prices</p>
+            <span class="shop-now-link">
+              Shop Now
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+            </span>
+          </div>
+        </div>
+        <div class="price-card reveal" style="--stagger-index: 2">
+          <img src="images/ring.png" alt="Under ₹4,999">
+          <div class="price-card-overlay"></div>
+          <div class="price-card-content">
+            <h3>Under ₹4,999</h3>
+            <p>Luxury jewelry for special moments</p>
+            <span class="shop-now-link">
+              Shop Now
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 9. WHY NIHI STUDIO ===== -->
+  <section class="trust-section" id="trust">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 style="color: var(--white);">Why Nihi Studio</h2>
+        <p>Crafted with love, delivered with care</p>
+      </div>
+      <div class="trust-grid stagger-children">
+        <div class="trust-card reveal" style="--stagger-index: 0">
+          <div class="trust-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+          </div>
+          <div class="trust-stat" data-target="15000">0</div>
+          <h3>Certified Jewelry</h3>
+          <p>BIS hallmarked gold and IGI certified diamonds for guaranteed quality</p>
+        </div>
+        <div class="trust-card reveal" style="--stagger-index: 1">
+          <div class="trust-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>
+          </div>
+          <div class="trust-stat" data-target="500">0</div>
+          <h3>Free Shipping</h3>
+          <p>Complimentary shipping on all orders above ₹999 across India</p>
+        </div>
+        <div class="trust-card reveal" style="--stagger-index: 2">
+          <div class="trust-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182"/></svg>
+          </div>
+          <div class="trust-stat" data-target="30">0</div>
+          <h3>Easy Returns</h3>
+          <p>Hassle-free 30-day return and exchange policy on all products</p>
+        </div>
+        <div class="trust-card reveal" style="--stagger-index: 3">
+          <div class="trust-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+          </div>
+          <div class="trust-stat" data-target="50000">0</div>
+          <h3>Happy Customers</h3>
+          <p>Trusted by over 50,000 customers with a 4.8★ average rating</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 10. TESTIMONIALS ===== -->
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>What Our Customers Say</h2>
+        <p>Real stories from real jewelry lovers</p>
+      </div>
+      <div class="testimonial-carousel" id="testimonialCarousel">
+        <div class="testimonial-card">
+          <div class="testimonial-inner">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"The craftsmanship is absolutely stunning. I ordered the Celestial Diamond Ring for my anniversary and my wife was in tears. The quality and detail exceeded all expectations. Nihi Studio has a customer for life!"</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">R</div>
+              <span class="testimonial-name">Rahul Sharma</span>
+              <span class="testimonial-location">Mumbai, India</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-inner">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"I've been searching for authentic, beautifully designed jewelry and Nihi Studio is a dream come true. The packaging alone feels so luxurious. Every piece I've bought gets me countless compliments!"</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">P</div>
+              <span class="testimonial-name">Priya Menon</span>
+              <span class="testimonial-location">Bangalore, India</span>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-inner">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-text">"The Eternal Gold Necklace is the most beautiful piece I own. The gold is so rich and the pendant catches light perfectly. Customer service was exceptional too — they helped me pick the perfect length."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">A</div>
+              <span class="testimonial-name">Anjali Patel</span>
+              <span class="testimonial-location">Delhi, India</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-dots" id="testimonialDots">
+        <button class="testimonial-dot active" data-index="0" aria-label="Testimonial 1"></button>
+        <button class="testimonial-dot" data-index="1" aria-label="Testimonial 2"></button>
+        <button class="testimonial-dot" data-index="2" aria-label="Testimonial 3"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 11. INSTAGRAM FEED ===== -->
+  <section class="instagram" id="instagram">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2>Follow Us @nihistudio</h2>
+        <p>Join our community of jewelry lovers</p>
+      </div>
+      <div class="instagram-grid stagger-children">
+        <div class="instagram-item reveal" style="--stagger-index: 0">
+          <img src="images/ring.png" alt="Instagram Post">
+          <div class="instagram-overlay">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </div>
+        </div>
+        <div class="instagram-item reveal" style="--stagger-index: 1">
+          <img src="images/necklace.png" alt="Instagram Post">
+          <div class="instagram-overlay">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </div>
+        </div>
+        <div class="instagram-item reveal" style="--stagger-index: 2">
+          <img src="images/earring.png" alt="Instagram Post">
+          <div class="instagram-overlay">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </div>
+        </div>
+        <div class="instagram-item reveal" style="--stagger-index: 3">
+          <img src="images/bracelet.png" alt="Instagram Post">
+          <div class="instagram-overlay">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </div>
+        </div>
+        <div class="instagram-item reveal" style="--stagger-index: 4">
+          <img src="images/pendant.png" alt="Instagram Post">
+          <div class="instagram-overlay">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </div>
+        </div>
+        <div class="instagram-item reveal" style="--stagger-index: 5">
+          <img src="images/bangles.png" alt="Instagram Post">
+          <div class="instagram-overlay">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 12. NEWSLETTER ===== -->
+  <section class="newsletter" id="newsletter">
+    <div class="container">
+      <h2 class="reveal">Stay in the Loop</h2>
+      <p class="reveal">Subscribe to get exclusive offers, new arrival alerts, and style inspiration delivered to your inbox.</p>
+      <form class="newsletter-form reveal" id="newsletterForm">
+        <input type="email" placeholder="Enter your email address" required id="newsletterEmail">
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== 13. FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">Nihi Studio</div>
+          <p>Crafting timeless jewelry that celebrates life's precious moments. Every piece is a testament to our commitment to quality, design, and your happiness.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Instagram">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="#" aria-label="Facebook">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+            </a>
+            <a href="#" aria-label="Twitter">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+            </a>
+            <a href="#" aria-label="YouTube">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 00-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 2A29 29 0 001 11.75a29 29 0 00.46 5.33A2.78 2.78 0 003.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 001.94-2 29 29 0 00.46-5.25 29 29 0 00-.46-5.43z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <a href="#categories">Shop All</a>
+          <a href="#new-arrivals">New Arrivals</a>
+          <a href="#bestsellers">Bestsellers</a>
+          <a href="#shop-by-price">Sale</a>
+          <a href="#">Gift Cards</a>
+        </div>
+        <div class="footer-col">
+          <h4>Help</h4>
+          <a href="#">Contact Us</a>
+          <a href="#">FAQs</a>
+          <a href="#">Shipping Info</a>
+          <a href="#">Returns & Exchanges</a>
+          <a href="#">Size Guide</a>
+        </div>
+        <div class="footer-col">
+          <h4>About</h4>
+          <a href="#">Our Story</a>
+          <a href="#">Craftsmanship</a>
+          <a href="#">Sustainability</a>
+          <a href="#">Careers</a>
+          <a href="#">Press</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Nihi Studio. All rights reserved. Made with 💛 in India.</p>
+        <div class="payment-icons">
+          <span>VISA</span>
+          <span>Mastercard</span>
+          <span>UPI</span>
+          <span>PayTM</span>
+          <span>COD</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== SEARCH OVERLAY ===== -->
+  <div class="search-overlay" id="searchOverlay">
+    <button class="search-close" id="searchClose" aria-label="Close search">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    <div class="search-overlay-content">
+      <div class="search-input-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+        <input type="text" placeholder="Search for rings, necklaces, earrings..." id="searchInput">
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== QUICK VIEW MODAL ===== -->
+  <div class="quick-view-modal" id="quickViewModal">
+    <div class="quick-view-backdrop" id="quickViewBackdrop"></div>
+    <div class="quick-view-content">
+      <button class="quick-view-close" id="quickViewClose" aria-label="Close quick view">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <div class="quick-view-img">
+        <img src="" alt="" id="qvImage">
+      </div>
+      <div class="quick-view-details">
+        <h2 id="qvName"></h2>
+        <div class="product-rating">
+          <span class="stars" id="qvStars"></span>
+          <span class="count" id="qvReviews"></span>
+        </div>
+        <div class="product-price">
+          <span class="current" id="qvPrice"></span>
+          <span class="original" id="qvOriginal"></span>
+          <span class="discount" id="qvDiscount"></span>
+        </div>
+        <p class="quick-view-description" id="qvDescription"></p>
+        <button class="btn-primary" id="qvAddToCart" style="width:100%;justify-content:center;">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CART SIDEBAR ===== -->
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h3>Your Cart (<span id="cartItemCount">0</span>)</h3>
+      <button class="cart-close" id="cartClose" aria-label="Close cart">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <div class="cart-empty" id="cartEmpty">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+        <p>Your cart is empty</p>
+        <a href="#bestsellers" class="btn-primary" onclick="closeCart()">Start Shopping</a>
+      </div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+      <div class="cart-total">
+        <span>Subtotal</span>
+        <span id="cartTotal">₹0</span>
+      </div>
+      <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <!-- ===== AUTHENTICATION MODAL (SIGN IN / SIGN UP) ===== -->
+  <div class="auth-modal" id="authModal">
+    <div class="auth-modal-backdrop" id="authBackdrop"></div>
+    <div class="auth-modal-content">
+      <button class="auth-close-btn" id="authCloseBtn" aria-label="Close modal">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="auth-modal-header">
+        <div class="auth-logo">NIHI STUDIO</div>
+        <p class="auth-subtitle" id="authSubtitle">Join our inner circle for exclusive access & luxury rewards</p>
+        
+        <!-- Warning Banner for Auth Gated Actions -->
+        <div class="auth-notice-banner" id="authNoticeBanner" style="display:none;">
+          <span id="authNoticeText">Please sign in or create an account to proceed.</span>
+        </div>
+
+        <!-- Auth Tabs -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tabSignIn">Sign In</button>
+          <button class="auth-tab" id="tabSignUp">Create Account</button>
+        </div>
+      </div>
+
+      <!-- Sign In Form -->
+      <form class="auth-form active" id="formSignIn">
+        <div class="form-group">
+          <label for="signInEmail">Email Address / Gmail</label>
+          <input type="email" id="signInEmail" placeholder="name@gmail.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="signInPassword">Password</label>
+          <input type="password" id="signInPassword" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div class="form-extra">
+          <label class="remember-me">
+            <input type="checkbox" checked> Remember me
+          </label>
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+        <div class="auth-error-msg" id="signInError" style="display:none;"></div>
+        <button type="submit" class="btn-primary auth-submit-btn" id="btnSubmitSignIn">Sign In to Nihi Studio</button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form class="auth-form" id="formSignUp" style="display:none;">
+        <div class="form-group">
+          <label for="signUpName">Full Name</label>
+          <input type="text" id="signUpName" placeholder="e.g. Salman Khan" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label for="signUpEmail">Email Address / Gmail</label>
+          <input type="email" id="signUpEmail" placeholder="name@gmail.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label for="signUpPassword">Create Password</label>
+          <input type="password" id="signUpPassword" placeholder="Minimum 6 characters" minlength="6" required autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label for="signUpConfirmPassword">Confirm Password</label>
+          <input type="password" id="signUpConfirmPassword" placeholder="Re-enter your password" minlength="6" required autocomplete="new-password">
+        </div>
+        <div class="auth-error-msg" id="signUpError" style="display:none;"></div>
+        <button type="submit" class="btn-primary auth-submit-btn" id="btnSubmitSignUp">Create Free Account</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js?v=4"></script>
+</body>
+</html>
