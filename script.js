@@ -276,7 +276,12 @@ async function processSignUp(fullName, email, password) {
   const btnSubmitSignUp = document.getElementById('btnSubmitSignUp');
 
   if (btnSubmitSignUp) btnSubmitSignUp.textContent = 'Creating account...';
-  if (signUpError) signUpError.style.display = 'none';
+  if (signUpError) {
+    signUpError.style.display = 'none';
+    signUpError.style.background = '';
+    signUpError.style.borderColor = '';
+    signUpError.style.color = '';
+  }
 
   if (window.supabaseClient) {
     try {
@@ -288,8 +293,23 @@ async function processSignUp(fullName, email, password) {
         }
       });
       if (error) throw error;
+      
       const user = data.user;
-      onAuthSuccess({ email: user.email, fullName: fullName, id: user.id });
+      const session = data.session;
+      
+      if (session) {
+        // Auto-login active (Email Confirmation is disabled in Supabase)
+        onAuthSuccess({ email: user.email, fullName: fullName, id: user.id });
+      } else {
+        // Email Confirmation is enabled (Supabase default)
+        if (signUpError) {
+          signUpError.style.background = "#EBF5EB";
+          signUpError.style.borderColor = "var(--green)";
+          signUpError.style.color = "#276A27";
+          signUpError.textContent = "Account created! Please check your email to verify and sign in.";
+          signUpError.style.display = 'block';
+        }
+      }
     } catch (err) {
       if (signUpError) {
         signUpError.textContent = err.message || 'Failed to create account.';
