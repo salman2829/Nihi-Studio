@@ -237,6 +237,30 @@ function updateUserUI() {
   }
 }
 
+// ===== LOCAL STORAGE USER FALLBACK REGISTRY =====
+function saveLocalUser(email, password, fullName) {
+  try {
+    const users = JSON.parse(localStorage.getItem('nihi_local_users') || '{}');
+    users[email.toLowerCase().trim()] = { email: email.trim(), password, fullName, id: 'local_' + Date.now() };
+    localStorage.setItem('nihi_local_users', JSON.stringify(users));
+  } catch (e) {
+    console.error('Failed to save user to local storage:', e);
+  }
+}
+
+function verifyLocalUser(email, password) {
+  try {
+    const users = JSON.parse(localStorage.getItem('nihi_local_users') || '{}');
+    const user = users[email.toLowerCase().trim()];
+    if (user && user.password === password) {
+      return user;
+    }
+  } catch (e) {
+    console.error('Failed to verify local user:', e);
+  }
+  return null;
+}
+
 // ===== SUPABASE AUTH HANDLERS =====
 
 async function processSignIn(email, password) {
@@ -254,6 +278,24 @@ async function processSignIn(email, password) {
       const fullName = user.user_metadata?.full_name || email.split('@')[0];
       onAuthSuccess({ email: user.email, fullName: fullName, id: user.id });
     } catch (err) {
+      // Check if it is a network connectivity/adblocker issue
+      if (err.message && (err.message.includes('Failed to fetch') || err.name === 'TypeError')) {
+        console.warn('⚠️ Supabase connection failed. Trying local storage database fallback...');
+        const localUser = verifyLocalUser(email, password);
+        if (localUser) {
+          // Show quick local auth success alert
+          alert('ℹ️ Connected via Local Offline Mode.');
+          onAuthSuccess(localUser);
+          return;
+        } else {
+          if (signInError) {
+            signInError.textContent = 'Network error: Could not reach server, and no local account matches.';
+            signInError.style.display = 'block';
+          }
+          return;
+        }
+      }
+      
       if (signInError) {
         signInError.textContent = err.message || 'Invalid email or password.';
         signInError.style.display = 'block';
@@ -264,8 +306,15 @@ async function processSignIn(email, password) {
   } else {
     // Local session fallback mode
     setTimeout(() => {
-      const fullName = email.split('@')[0];
-      onAuthSuccess({ email, fullName, id: 'local_' + Date.now() });
+      const localUser = verifyLocalUser(email, password);
+      if (localUser) {
+        onAuthSuccess(localUser);
+      } else {
+        // If not registered locally, auto-create one for frictionless test
+        const fullName = email.split('@')[0];
+        saveLocalUser(email, password, fullName);
+        onAuthSuccess({ email, fullName, id: 'local_' + Date.now() });
+      }
       if (btnSubmitSignIn) btnSubmitSignIn.textContent = 'Sign In to Nihi Studio';
     }, 600);
   }
@@ -282,6 +331,9 @@ async function processSignUp(fullName, email, password) {
     signUpError.style.borderColor = '';
     signUpError.style.color = '';
   }
+
+  // Pre-save locally in case of network issue
+  saveLocalUser(email, password, fullName);
 
   if (window.supabaseClient) {
     try {
@@ -311,6 +363,14 @@ async function processSignUp(fullName, email, password) {
         }
       }
     } catch (err) {
+      // Check if it is a network connectivity/adblocker issue
+      if (err.message && (err.message.includes('Failed to fetch') || err.name === 'TypeError')) {
+        console.warn('⚠️ Supabase connection failed. Successfully saved user locally.');
+        alert('🎉 Account created successfully in Local Offline Mode!');
+        onAuthSuccess({ email, fullName, id: 'local_' + Date.now() });
+        return;
+      }
+
       if (signUpError) {
         signUpError.textContent = err.message || 'Failed to create account.';
         signUpError.style.display = 'block';
