@@ -11,7 +11,7 @@ window.NIHI_SUPABASE_CONFIG = {
 
 // Razorpay Key Configuration (You can replace this placeholder with your live Razorpay Key ID)
 window.NIHI_RAZORPAY_CONFIG = {
-  KEY_ID: "rzp_test_your_key_id"
+  KEY_ID: "rzp_test_TI5rRFNfaQmMSs"
 };
 
 // Initialize Supabase Client
